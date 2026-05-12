@@ -59,7 +59,13 @@ function onUpdate(updated) {
       <div v-else class="orgLayout">
         <!-- 트리 영역 -->
         <div class="treeWrap">
-          <TreeNode v-for="node in tree" :key="node.id" :node="node" @select="onSelect" @update="onUpdate" />
+          <TreeNode
+            v-for="node in tree"
+            :key="node.id"
+            :node="node"
+            @select="onSelect"
+            @update="onUpdate"
+          />
         </div>
 
         <!-- 노드 클릭 시 우측 상세 패널 -->
@@ -81,10 +87,11 @@ function onUpdate(updated) {
 </template>
 
 <style scoped>
+.contentWrap {
+  position: relative;
+  padding-top: 140px;
+}
 .orgLayout {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
   padding: 40px 0;
 }
 .treeWrap {
@@ -108,6 +115,9 @@ function onUpdate(updated) {
 
 /* 상세 패널 */
 .detailPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 240px;
   flex-shrink: 0;
   background: #1e1e2e;
@@ -139,6 +149,9 @@ function onUpdate(updated) {
 }
 
 .detailPlaceholder {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 240px;
   flex-shrink: 0;
   display: flex;

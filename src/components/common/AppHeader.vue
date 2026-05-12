@@ -15,6 +15,7 @@
           <li><RouterLink to="/reactive">반응형&amp;상태</RouterLink></li>
           <li><RouterLink to="/pattern">실전패턴</RouterLink></li>
           <li><RouterLink to="/proto">이것저것</RouterLink></li>
+          <li><RouterLink to="/org">DB연결연습</RouterLink></li>
         </ul>
       </nav>
     </div>

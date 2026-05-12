@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 조직도 노드. parentId가 null이면 최상위(루트) 노드
+model Node {
+  id        Int      @id @default(autoincrement())
+  name      String   // 이름 (홍길동, 개발팀 등)
+  role      String?  // 직책/구분 (CEO, 팀장 등). 없을 수도 있어서 Optional
+  parentId  Int?     // 부모 노드 ID. null이면 루트
+
+  // 자기 자신을 참조하는 관계 (트리 구조의 핵심)
+  parent   Node?  @relation("NodeChildren", fields: [parentId], references: [id])
+  children Node[] @relation("NodeChildren")
+
+  createdAt DateTime @default(now())
+}

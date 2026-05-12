@@ -8,6 +8,7 @@ import ComponentsView from '@/views/ComponentsView.vue'
 import ReactiveView from '@/views/ReactiveView.vue'
 import PatternView from '@/views/PatternView.vue'
 import ProtoView from '@/views/ProtoView.vue'
+import OrgView from '@/views/OrgView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,7 @@ const router = createRouter({
     { path: '/reactive', name: 'reactive', component: ReactiveView },
     { path: '/pattern', name: 'pattern', component: PatternView },
     { path: '/proto', name: 'proto', component: ProtoView },
+    { path: '/org', name: 'org', component: OrgView },
   ],
 })
 

@@ -14,6 +14,7 @@ async function main() {
   const mgmt = await prisma.node.create({
     data: { name: '경영진', role: '부문', parentId: company.id },
   })
+
   await prisma.node.createMany({
     data: [
       { name: '홍길동', role: 'CEO', parentId: mgmt.id },

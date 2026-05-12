@@ -1,0 +1,5 @@
+# CSS는 한줄쓰기 컨벤션을 사용하므로 Prettier 자동 포맷 제외
+src/assets/styles/*.css
+
+# scoped 스타일도 제외하고 싶다면 아래 추가 (Vue 파일 전체 제외는 권장 안함)
+# **/*.css

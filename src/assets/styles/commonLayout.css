@@ -1,0 +1,13 @@
+/* commonLayout.css */
+.pageOutWrap {width:100%; min-height:100vh;}
+.cl_subVisual {width:100%; height:100px; background:#f4f4f4;}
+.cl_breadcrumb {margin:24px 0 12px; font-size:14px; color:#666666;padding-left: 20px}
+.cl_pageTitle {margin:0 0 50px; font-size:32px; font-weight:700; color:#222222; padding-left: 20px;}
+.contentWrap {width:100%; max-width:1200px; margin:0 auto 80px; padding:0 20px;}
+.fullContentWrap {width:100%;}
+
+/* 버튼, 제목 공통 */
+.cl_globalTabButton {display:inline-flex; align-items:center; justify-content:center; min-width:120px; height:44px; padding:0 16px; font-size:14px; color:#333333; border:1px solid #dddddd; background:#ffffff;}
+
+/* 페이지 클래스 예시 */
+.homePage .cl_subVisual {background:#e9f1ff;}

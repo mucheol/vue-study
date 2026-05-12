@@ -1,0 +1,17 @@
+/* layout.css */
+.gridWrapper {overflow:hidden;}
+.grid {display:flex; flex-wrap:wrap; padding:10px 0 0 10px; margin:-10px;}
+.grid .gridCell {box-sizing:border-box; width:calc(100% / 4); border:0 solid transparent; border-width:0 10px 10px 0;}
+
+/* 반응형 */
+@media(max-width:1200px) {
+  .contentWrap {padding:0 16px;}
+  .cl_pageTitle {font-size:28px;}
+}
+
+@media(max-width:768px) {
+  .contentWrap {padding:0 12px;}
+  .cl_subVisual {height:180px;}
+  .cl_pageTitle {font-size:24px; margin-bottom:24px;}
+  .grid .gridCell {width:100%;}
+}

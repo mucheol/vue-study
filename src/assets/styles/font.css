@@ -1,0 +1,5 @@
+/* font.css */
+@font-face {font-family:'NotoSansR'; src:local('Noto Sans KR'), local('NotoSansR'), url('/fonts/NotoSans-Regular.woff2') format('woff2'); font-weight:400; font-style:normal;}
+body {font-family:'NotoSansR', 'Noto Sans KR', sans-serif;}
+
+/* TODO: 실제 폰트 파일 위치 및 웹폰트 세팅 확인 필요 */

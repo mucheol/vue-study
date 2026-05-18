@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
+import TiltCardSection from '@/components/sections/proto/TiltCardSection.vue'
 
 // ===== 지하철 실시간 노선도 =====
 const LINES = [
@@ -149,10 +150,6 @@ const mouseX = ref(0)
 const mouseY = ref(0)
 const cursorX = ref(0)
 const cursorY = ref(0)
-const tiltX = ref(0)
-const tiltY = ref(0)
-const tiltCardRef = ref(null)
-const tiltTransition = ref('none')
 const time = ref(0)
 let rafId = null
 let lastRafTime = null
@@ -283,18 +280,6 @@ function onMouseMove(e) {
   mouseY.value = e.clientY
 }
 
-function onTiltMove(e) {
-  tiltTransition.value = 'none'
-  const rect = tiltCardRef.value.getBoundingClientRect()
-  tiltX.value = ((e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)) * -20
-  tiltY.value = ((e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2)) * 20
-}
-function onTiltLeave() {
-  tiltTransition.value = 'transform 0.4s ease'
-  tiltX.value = 0
-  tiltY.value = 0
-}
-
 /* *** 도망 버튼 *** */
 const btnX = ref(0) // 버튼의 현재 위치
 const btnY = ref(0)
@@ -372,23 +357,7 @@ onUnmounted(() => {
       </div>
 
       <!-- /* 카드 3D Tilt 데모 - 마우스 위치에 따라 카드가 3D로 기울어지는 효과 */ -->
-      <section class="contentWrap tiltDemo">
-        <h2 class="demoTitle">3D Card Tilt</h2>
-        <div class="tiltScene">
-          <div
-            ref="tiltCardRef"
-            class="tiltCard"
-            :style="{
-              transform: `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`,
-              transition: tiltTransition,
-            }"
-            @mousemove="onTiltMove"
-            @mouseleave="onTiltLeave"
-          >
-            <p class="tiltCardText">카드 Tilt</p>
-          </div>
-        </div>
-      </section>
+      <TiltCardSection></TiltCardSection>
 
       <hr class="sectionDivider" />
       <!-- /* *** 지하철 실시간 노선도 실시간 API 활용 예시 (공식 서울열린데이터광장) *** */ -->
@@ -556,40 +525,6 @@ onUnmounted(() => {
     rgba(255, 255, 255, 0.25) 80%,
     transparent
   );
-}
-
-.tiltDemo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 100px 0;
-}
-.tiltScene {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 400px;
-}
-.tiltCard {
-  width: 500px;
-  height: 530px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
-  cursor: pointer;
-  will-change: transform;
-  transition: transform 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-.tiltCardText {
-  color: #fff;
-  font-size: 24px;
-  text-align: center;
-  pointer-events: none;
-  user-select: none;
 }
 .demoTitle {
   font-size: 28px;

@@ -3,6 +3,7 @@ import { ref, nextTick } from 'vue'
 
 const props = defineProps({
   node: Object, // { id, name, role, children: [...] }
+  isAdmin: Boolean, // true면 편집 가능, false면 읽기 전용
 })
 
 const emit = defineEmits(['select', 'update'])
@@ -57,9 +58,9 @@ function onKeydown(e) {
     <!-- 노드 박스: 클릭=상세, 더블클릭=편집 -->
     <div
       class="nodeBox"
-      :class="{ hasChildren: node.children?.length }"
+      :class="{ hasChildren: node.children?.length, isPerson: node.type === 'person' }"
       @click="emit('select', node)"
-      @dblclick.stop="startEdit"
+      @dblclick.stop="isAdmin && startEdit()"
     >
       <template v-if="isEditing">
         <input
@@ -83,6 +84,7 @@ function onKeydown(e) {
         <div v-for="child in node.children" :key="child.id" class="childCol">
           <TreeNode
             :node="child"
+            :isAdmin="isAdmin"
             @select="emit('select', $event)"
             @update="emit('update', $event)"
           />
@@ -120,6 +122,17 @@ function onKeydown(e) {
 }
 .nodeBox:hover {
   background: #3a3a5e;
+}
+/* 사람 노드: 조직 노드와 구분되는 색상 */
+.nodeBox.isPerson {
+  background: #1e2e1e;
+  border-color: #3a5a3a;
+}
+.nodeBox.isPerson:hover {
+  background: #2a3e2a;
+}
+.nodeBox.isPerson .nodeName {
+  color: #a0e0a0;
 }
 
 /* 자식이 있는 박스 아래 → 20px 세로선 */

@@ -11,6 +11,9 @@ datasource db {
 model Node {
   id        Int      @id @default(autoincrement())
   name      String   // 이름 (홍길동, 개발팀 등)
+  // "org" = 조직(팀/파트/부문), "person" = 사람(직원)
+  // @default("org"): 기존 데이터에 type이 없을 때 자동으로 "org" 부여
+  type      String   @default("org")
   role      String?  // 직책/구분 (CEO, 팀장 등). 없을 수도 있어서 Optional
   parentId  Int?     // 부모 노드 ID. null이면 루트
 

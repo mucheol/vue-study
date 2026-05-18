@@ -72,47 +72,71 @@ let lastRafTime = null
 
 async function fetchAllLines() {
   const key = import.meta.env.VITE_SUBWAY_API_KEY
+
+  // ALL: 전 노선·전 역 도착정보를 1회 호출로 수신
+  const data = await fetch(`/subway-api/api/subway/${key}/json/realtimeStationArrival/ALL`)
+    .then((r) => r.json())
+    .catch((err) => {
+      console.error('[subway] fetch 실패', err)
+      return { realtimeArrivalList: [] }
+    })
+
+  if (data.errorMessage && data.errorMessage.status !== 200) {
+    console.warn('[subway] API 오류:', data.errorMessage)
+  }
+
+  const allArrivals = data.realtimeArrivalList || []
   const newMap = {}
 
-  await Promise.all(
-    LINES.map(async (line) => {
-      // 호선당 기준역 1개만 쿼리 (3회/갱신 → 하루 864회, 1000건 이내)
-      const data = await fetch(
-        `/subway-api/api/subway/${key}/json/realtimeStationArrival/0/10/${encodeURIComponent(line.refStation.name)}`,
-      )
-        .then((r) => r.json())
-        .catch((err) => {
-          console.error(`[subway] fetch 실패 (${line.name} ${line.refStation.name})`, err)
-          return { realtimeArrivalList: [] }
-        })
+  LINES.forEach((line) => {
+    // 1) 해당 호선만 추출
+    const lineArrivals = allArrivals.filter((a) => String(a.subwayId) === line.id)
 
-      if (data.errorMessage && data.errorMessage.status !== 200) {
-        console.warn(`[subway] API 오류 (${line.name}):`, data.errorMessage)
-      }
+    // 2) btrainNo 기준 중복 제거 — 열차당 가장 가까운 다음 역 1건만 유지
+    const trainMap = new Map()
+    lineArrivals.forEach((a) => {
+      const barvlDt = Math.max(0, parseInt(a.barvlDt) || 0)
+      const prev = trainMap.get(a.btrainNo)
+      if (!prev || barvlDt < prev.barvlDt) trainMap.set(a.btrainNo, { ...a, barvlDt })
+    })
 
-      // 해당 호선 열차만 필터링 (기준역에 다른 호선 열차 정보도 섞여 있을 수 있음)
-      const arrivals = (data.realtimeArrivalList || []).filter(
-        (a) => String(a.subwayId) === line.id,
-      )
+    // 3) 우리가 표시하는 역 범위 안에 있는 항목만 매핑
+    newMap[line.id] = [...trainMap.values()]
+      .map((a) => {
+        const stIdx = line.stations.findIndex((s) => s.name === a.statnNm)
+        if (stIdx === -1) return null // 표시 범위 밖 역은 제외
 
-      // 각 도착 정보를 그대로 열차 1대로 변환 (기준역 1개 쿼리라 중복 없음)
-      newMap[line.id] = arrivals.map((a, i) => {
-        const barvlDt = Math.max(0, parseInt(a.barvlDt) || 0)
+        // recptnDt 기준 경과 시간만큼 barvlDt 선보정 (API 데이터는 최대 30초 지연 가능)
+        const rawBarvlDt = Math.max(0, parseInt(a.barvlDt) || 0)
+        const elapsed = a.recptnDt
+          ? Math.max(
+              0,
+              (Date.now() - new Date(a.recptnDt.replace(' ', 'T') + '+09:00').getTime()) / 1000,
+            )
+          : 0
+        const barvlDt = Math.max(0, rawBarvlDt - elapsed)
+
         const goingRight = a.updnLine.includes(line.rightwardKeyword)
+        const direction = goingRight ? 1 : -1
+
+        // 열차의 추정 위치가 표시 범위(0 ~ stations.length-1) 밖이면 제외
+        const rawPos = direction === 1 ? stIdx - barvlDt / line.segmentSec : stIdx + barvlDt / line.segmentSec
+        if (rawPos < 0 || rawPos > line.stations.length - 1) return null
+
         return {
-          id: `${line.id}-${i}`,
-          baseStationIdx: line.refStation.idx,
+          id: `${line.id}-${a.btrainNo}`,
+          baseStationIdx: stIdx,
           barvlDt,
-          direction: goingRight ? 1 : -1,
+          direction,
           destination: a.trainLineNm,
           arvlMsg: a.arvlMsg2,
         }
       })
-    }),
-  )
+      .filter(Boolean)
+  })
 
   lineTrainsMap.value = newMap
-  nextRefreshIn.value = 120
+  nextRefreshIn.value = 70
 }
 
 function trainPos(train, line) {
@@ -163,7 +187,7 @@ function tick(timestamp) {
 onMounted(() => {
   // 지하철 초기 로드
   fetchAllLines()
-  subwayFetchTimer = setInterval(fetchAllLines, 120000) // 2분마다 (9~19시 기준 900콜/일 = 1000건 이내)
+  subwayFetchTimer = setInterval(fetchAllLines, 70000) // 70초마다 (ALL 1콜 × 1002회/일 ≈ 쿼터 한계치)
   tick()
 })
 onUnmounted(() => {

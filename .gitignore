@@ -44,3 +44,8 @@ __screenshots__/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# 환경변수 (비밀값)
+.env
+.env.*
+!.env.example

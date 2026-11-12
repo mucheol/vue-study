@@ -71,10 +71,8 @@ let rafId = null
 let lastRafTime = null
 
 async function fetchAllLines() {
-  const key = import.meta.env.VITE_SUBWAY_API_KEY
-
-  // ALL: 전 노선·전 역 도착정보를 1회 호출로 수신
-  const data = await fetch(`/subway-api/api/subway/${key}/json/realtimeStationArrival/ALL`)
+  // ALL: 전 노선·전 역 도착정보를 1회 호출로 수신 (API 키는 백엔드 프록시에서만 사용)
+  const data = await fetch('http://localhost:3001/api/subway/arrivals')
     .then((r) => r.json())
     .catch((err) => {
       console.error('[subway] fetch 실패', err)

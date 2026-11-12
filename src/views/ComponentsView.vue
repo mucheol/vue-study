@@ -204,7 +204,7 @@ import LoginForm from './LoginForm.vue'
 
 function onLoginSubmit(data) {
   // 자식이 emit('submit', { id, password }) 로 보낸 데이터를 받음
-  console.log('로그인 시도 :', data.id, data.password)
+  console.log('로그인 시도 :', data.id) // 비밀번호는 로그에 남기지 않음
   // 실제로는 여기서 API 호출
 }
 
